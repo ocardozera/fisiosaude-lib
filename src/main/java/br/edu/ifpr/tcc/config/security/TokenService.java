@@ -14,10 +14,10 @@ import java.util.Date;
 @Service
 public class TokenService {
 
-    @Value("${forum.jwt.expiration}")
+    @Value("${fisiosaude.jwt.expiration}")
     private String expiration;
 
-    @Value("${forum.jwt.secret}")
+    @Value("${fisiosaude.jwt.secret}")
     private String secret;
 
 
