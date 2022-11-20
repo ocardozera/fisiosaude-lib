@@ -61,7 +61,7 @@ public class EstadoController {
 
                 retorno = RetornoDTO.sucesso("Estado já cadastrado!", estadoDTO);
 
-                return new ResponseEntity<>(retorno, HttpStatus.OK);
+                return new ResponseEntity<>(retorno, HttpStatus.BAD_REQUEST);
 
             }
         }
@@ -94,7 +94,7 @@ public class EstadoController {
         return new ResponseEntity<>(retorno, HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/editar/{id}")
+    @PutMapping("/editar/{id}")
     @Transactional
     @CacheEvict(value = "listarEstados", allEntries = true)
     public ResponseEntity<RetornoDTO> atualizar(@PathVariable Long id, @RequestBody @Valid EstadoForm estadoForm) {
@@ -122,7 +122,7 @@ public class EstadoController {
         return new ResponseEntity<>(retorno, HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/deletar/{id}")
+    @DeleteMapping("/deletar/{id}")
     @Transactional
     @CacheEvict(value = "listarEstados", allEntries = true)
     public ResponseEntity<RetornoDTO> remover(@PathVariable Long id) {

@@ -95,7 +95,7 @@ public class SeederBanco implements CommandLineRunner {
             Date dataNascimento = new Date(2000, 07, 29);
             usuario.setDataNascimento(dataNascimento);
 
-            usuario.setCidade(new Cidade(1L));
+            usuario.setCidade(new Cidade(4L));
             usuario.setLogradouro("Av Roosevelt");
             usuario.setNumero(217);
             usuario.setComplemento("Casa c/ antena");

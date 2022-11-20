@@ -2,27 +2,35 @@ package br.edu.ifpr.tcc.controller;
 
 import br.edu.ifpr.tcc.dto.CidadeDTO;
 import br.edu.ifpr.tcc.dto.RetornoDTO;
+import br.edu.ifpr.tcc.dto.UsuarioDTO;
+import br.edu.ifpr.tcc.filtro.FiltroPaciente;
 import br.edu.ifpr.tcc.form.CidadeForm;
 import br.edu.ifpr.tcc.mapper.CidadeMapper;
+import br.edu.ifpr.tcc.mapper.UsuarioMapper;
 import br.edu.ifpr.tcc.modelo.Cidade;
 import br.edu.ifpr.tcc.modelo.Estado;
+import br.edu.ifpr.tcc.modelo.Usuario;
 import br.edu.ifpr.tcc.repository.CidadeRepository;
 import br.edu.ifpr.tcc.repository.EstadoRepository;
+import br.edu.ifpr.tcc.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/cidade")
-public class CidadeController {
+@RequestMapping(value = "/fisioterapeuta")
+public class FisioterapeutaController {
 
     @Autowired
     private EstadoRepository estadoRepository;
@@ -30,49 +38,92 @@ public class CidadeController {
     @Autowired
     private CidadeRepository cidadeRepository;
 
-    @GetMapping("/listar")
-    @Cacheable(value = "listarCidades")
-    public ResponseEntity<RetornoDTO> lista() {
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @GetMapping("/listarFisioterapeutas")
+    public ResponseEntity<RetornoDTO> listarFisioterapeutas() {
         RetornoDTO retorno;
 
-        List<Cidade> listaCidades = cidadeRepository.findAll();
+//        Optional<Usuario> listaPacientes = usuarioRepository.findByPacienteIsTrue();
 
-        retorno = RetornoDTO.sucesso("Consulta realizada com sucesso!", CidadeMapper.convertToListVo(listaCidades));
+        List<Usuario> listaFisioterapeutas = usuarioRepository.findAllByFisioterapeutaIsTrue();
+
+        retorno = RetornoDTO.sucesso("Consulta realizada com sucesso!", UsuarioMapper.convertToListVo(listaFisioterapeutas));
 
         return new ResponseEntity<>(retorno, HttpStatus.OK);
     }
 
-    @PostMapping("/cadastrar")
+    @PostMapping("/cadastrarPaciente")
     @Transactional
-    @CacheEvict(value = "listarCidades", allEntries = true)
-    public ResponseEntity<?> cadastrar(@RequestBody @Valid CidadeForm cidadeForm) {
+    public ResponseEntity<?> cadastrar(@RequestBody @Valid FiltroPaciente filtro)  {
         RetornoDTO retorno;
 
-        if (cidadeForm != null && cidadeForm.getNome() != null && !cidadeForm.getNome().isEmpty()
-            && cidadeForm.getEstado() != null && cidadeForm.getEstado().getId() != null
-            && cidadeForm.getEstado().getId() > 0) {
 
-            Long estadoId = cidadeForm.getEstado().getId();
+        try {
 
-            Optional<Cidade> cidade = cidadeRepository.obterCidadeByNomeEEstadoId(cidadeForm.getNome(), estadoId);
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
-            if (!cidade.isPresent()) {
+            if (filtro != null) {
 
-                Cidade cidadeEntity = CidadeMapper.convertFormToEntity(cidadeForm);
-                cidadeRepository.save(cidadeEntity);
+                Optional<Usuario> pacienteCadastrado = usuarioRepository.findByEmail(filtro.getUsuarioForm().getEmail());
+
+                if (!pacienteCadastrado.isPresent()) {
+
+                    Optional<Usuario> pacienteCadastradoCPF = usuarioRepository.findByCpf(filtro.getUsuarioForm().getCpf());
+
+                    if (!pacienteCadastradoCPF.isPresent()) {
+                        Usuario pacienteSalvar = UsuarioMapper.convertFormToEntity(filtro.getUsuarioForm());
+
+                        pacienteSalvar.setPaciente(true);
+
+                        if (pacienteSalvar.getSenha() != null && !pacienteSalvar.getSenha().isEmpty()) {
+                            PasswordEncoder encoder = new BCryptPasswordEncoder();
+                            String senhaCriptografada = encoder.encode(pacienteSalvar.getSenha());
+                            pacienteSalvar.setSenha(senhaCriptografada);
+                        }
+
+                        if (filtro.getUsuarioForm().getStDataNascimento() != null) {
+                            Date dataNascimento = formatter.parse(filtro.getUsuarioForm().getStDataNascimento());
+
+                            if (dataNascimento != null) {
+                                pacienteSalvar.setDataNascimento(dataNascimento);
+                            }
+                        }
+
+                        usuarioRepository.save(pacienteSalvar);
+                        retorno = RetornoDTO.sucesso("Dados cadastrados com sucesso!", UsuarioMapper.convertToVo(pacienteSalvar));
+
+                        return new ResponseEntity<>(retorno, HttpStatus.CREATED);
+                    } else {
+                        UsuarioDTO pacienteCadastradoDTO = UsuarioMapper.convertToVo(pacienteCadastradoCPF.get());
+
+                        retorno = RetornoDTO.erro("Paciente já cadastrado!", pacienteCadastradoDTO);
+
+                        return new ResponseEntity<>(retorno, HttpStatus.BAD_REQUEST);
+                    }
 
 
-                retorno = RetornoDTO.sucesso("Dados cadastrados com sucesso!", CidadeMapper.convertToVo(cidadeEntity));
 
-                return new ResponseEntity<>(retorno, HttpStatus.CREATED);
-            } else {
-                CidadeDTO cidadeDTO = CidadeMapper.convertToVo(cidade.get());
+                } else {
+                    UsuarioDTO pacienteCadastradoDTO = UsuarioMapper.convertToVo(pacienteCadastrado.get());
 
-                retorno = RetornoDTO.sucesso("Cidade já cadastrada!", cidadeDTO);
+                    retorno = RetornoDTO.erro("Paciente já cadastrado!", pacienteCadastradoDTO);
 
-                return new ResponseEntity<>(retorno, HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(retorno, HttpStatus.BAD_REQUEST);
+                }
+
             }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            retorno = RetornoDTO.erro("Não foi possível completar sua solicitação!");
+
+            return new ResponseEntity<>(retorno, HttpStatus.BAD_REQUEST);
         }
+
         retorno = RetornoDTO.erro("Sem conteúdo");
 
         return new ResponseEntity<>(retorno, HttpStatus.NO_CONTENT);

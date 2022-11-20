@@ -66,7 +66,7 @@ public class ServicoController {
 
                 retorno = RetornoDTO.sucesso("Serviço já cadastrado!", servicoDTO);
 
-                return new ResponseEntity<>(retorno, HttpStatus.OK);
+                return new ResponseEntity<>(retorno, HttpStatus.BAD_REQUEST);
 
             }
         }
@@ -99,6 +99,7 @@ public class ServicoController {
         return new ResponseEntity<>(retorno, HttpStatus.NO_CONTENT);
     }
 
+//    @CrossOrigin(origins = "http://localhost:4200")
     @PutMapping("/editar/{id}")
     @Transactional
     @CacheEvict(value = "listarServicos", allEntries = true)

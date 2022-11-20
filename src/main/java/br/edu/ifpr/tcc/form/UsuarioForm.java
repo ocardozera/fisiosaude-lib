@@ -1,10 +1,12 @@
-package br.edu.ifpr.tcc.dto;
+package br.edu.ifpr.tcc.form;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import br.edu.ifpr.tcc.dto.CidadeDTO;
+import org.hibernate.validator.constraints.Length;
 
-public class UsuarioDTO {
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+public class UsuarioForm {
 
     private Long id;
     private String nome;
@@ -12,66 +14,16 @@ public class UsuarioDTO {
     private String senha;
     private String telefone;
     private String cpf;
-    private Date dataNascimento;
     private String stDataNascimento;
-
     private CidadeDTO cidade;
-
     private String logradouro;
     private Integer numero;
     private String complemento;
     private String bairro;
-
-    private Boolean administrador;
-
-    private Boolean fisioterapeuta;
     private Integer registroProfissional;
-
-    private Boolean paciente;
-
     private String diagnostico;
-
     private String sexo;
     private Integer cep;
-
-    private List<PerfilDTO> perfis = new ArrayList<>();
-
-    public UsuarioDTO() {
-    }
-
-    public UsuarioDTO(Long id, String nome, String email, String senha, String telefone, String cpf, Date dataNascimento,
-                      String stDataNascimento, CidadeDTO cidade, String logradouro, Integer numero, String complemento,
-                      String bairro, Boolean administrador, Boolean fisioterapeuta, Integer registroProfissional, Boolean paciente,
-                      String diagnostico, String sexo, Integer cep) {
-        this.id = id;
-        this.nome = nome;
-        this.email = email;
-        this.senha = senha;
-        this.telefone = telefone;
-        this.cpf = cpf;
-        this.dataNascimento = dataNascimento;
-        this.stDataNascimento = stDataNascimento;
-        this.cidade = cidade;
-        this.logradouro = logradouro;
-        this.numero = numero;
-        this.complemento = complemento;
-        this.bairro = bairro;
-        this.administrador = administrador;
-        this.fisioterapeuta = fisioterapeuta;
-        this.registroProfissional = registroProfissional;
-        this.paciente = paciente;
-        this.diagnostico = diagnostico;
-        this.sexo = sexo;
-        this.cep = cep;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getNome() {
         return nome;
@@ -111,14 +63,6 @@ public class UsuarioDTO {
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
-    }
-
-    public Date getDataNascimento() {
-        return dataNascimento;
-    }
-
-    public void setDataNascimento(Date dataNascimento) {
-        this.dataNascimento = dataNascimento;
     }
 
     public String getStDataNascimento() {
@@ -169,22 +113,6 @@ public class UsuarioDTO {
         this.bairro = bairro;
     }
 
-    public Boolean getAdministrador() {
-        return administrador;
-    }
-
-    public void setAdministrador(Boolean administrador) {
-        this.administrador = administrador;
-    }
-
-    public Boolean getFisioterapeuta() {
-        return fisioterapeuta;
-    }
-
-    public void setFisioterapeuta(Boolean fisioterapeuta) {
-        this.fisioterapeuta = fisioterapeuta;
-    }
-
     public Integer getRegistroProfissional() {
         return registroProfissional;
     }
@@ -193,20 +121,20 @@ public class UsuarioDTO {
         this.registroProfissional = registroProfissional;
     }
 
-    public Boolean getPaciente() {
-        return paciente;
-    }
-
-    public void setPaciente(Boolean paciente) {
-        this.paciente = paciente;
-    }
-
     public String getDiagnostico() {
         return diagnostico;
     }
 
     public void setDiagnostico(String diagnostico) {
         this.diagnostico = diagnostico;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getSexo() {
@@ -223,13 +151,5 @@ public class UsuarioDTO {
 
     public void setCep(Integer cep) {
         this.cep = cep;
-    }
-
-    public List<PerfilDTO> getPerfis() {
-        return perfis;
-    }
-
-    public void setPerfis(List<PerfilDTO> perfis) {
-        this.perfis = perfis;
     }
 }

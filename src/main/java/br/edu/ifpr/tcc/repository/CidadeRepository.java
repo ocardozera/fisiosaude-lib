@@ -13,6 +13,8 @@ public interface CidadeRepository extends JpaRepository<Cidade, Long> {
 
     Optional<Cidade> findCidadeByEstado_Id(Long id);
 
+    
+
     @Query("SELECT c FROM Cidade c WHERE c.nome = :nomeCidade and c.estado.id = :estadoId")
     Optional<Cidade> obterCidadeByNomeEEstadoId(@Param("nomeCidade") String nomeCidade, @Param("estadoId") Long estadoId);
 }

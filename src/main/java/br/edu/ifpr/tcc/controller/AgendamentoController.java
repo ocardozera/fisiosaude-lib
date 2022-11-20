@@ -38,7 +38,6 @@ public class AgendamentoController {
 
 
     @GetMapping("/listar")
-    @Cacheable(value = "listarAgendamentos")
     public ResponseEntity<RetornoDTO> lista() {
         RetornoDTO retorno;
 

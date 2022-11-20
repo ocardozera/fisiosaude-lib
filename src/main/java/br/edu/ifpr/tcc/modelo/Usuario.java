@@ -41,6 +41,10 @@ public class Usuario implements UserDetails {
 
 	private Boolean paciente;
 
+	private String diagnostico;
+	private String sexo;
+	private Integer cep;
+
 	@ManyToMany(fetch = FetchType.EAGER)
 	private List<Perfil> perfis = new ArrayList<>();
 
@@ -195,6 +199,30 @@ public class Usuario implements UserDetails {
 
 	public void setPaciente(Boolean paciente) {
 		this.paciente = paciente;
+	}
+
+	public String getDiagnostico() {
+		return diagnostico;
+	}
+
+	public void setDiagnostico(String diagnostico) {
+		this.diagnostico = diagnostico;
+	}
+
+	public String getSexo() {
+		return sexo;
+	}
+
+	public void setSexo(String sexo) {
+		this.sexo = sexo;
+	}
+
+	public Integer getCep() {
+		return cep;
+	}
+
+	public void setCep(Integer cep) {
+		this.cep = cep;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package br.edu.ifpr.tcc.mapper;
 
 import br.edu.ifpr.tcc.dto.UsuarioDTO;
 import br.edu.ifpr.tcc.form.CidadeForm;
+import br.edu.ifpr.tcc.form.UsuarioForm;
 import br.edu.ifpr.tcc.modelo.Cidade;
 import br.edu.ifpr.tcc.modelo.Usuario;
 
@@ -36,6 +37,9 @@ public class UsuarioMapper {
 
             dto.setPaciente(entity.getPaciente());
 
+            dto.setDiagnostico(entity.getDiagnostico());
+            dto.setSexo(entity.getSexo());
+            dto.setCep(entity.getCep());
         }
         return dto;
     }
@@ -76,6 +80,10 @@ public class UsuarioMapper {
             entity.setRegistroProfissional(dto.getRegistroProfissional());
 
             entity.setPaciente(dto.getPaciente());
+
+            entity.setDiagnostico(dto.getDiagnostico());
+            entity.setSexo(dto.getSexo());
+            entity.setCep(dto.getCep());
         }
         return entity;
     }
@@ -91,13 +99,25 @@ public class UsuarioMapper {
         return listEntity;
     }
 
-    public static Cidade convertFormToEntity(CidadeForm form) {
+    public static Usuario convertFormToEntity(UsuarioForm form) {
 
-        Cidade entity = null;
+        Usuario entity = null;
         if (form != null) {
-            entity = new Cidade();
+            entity = new Usuario();
             entity.setNome(form.getNome());
-            entity.setEstado(EstadoMapper.convertToEntity(form.getEstado()));
+            entity.setEmail(form.getEmail());
+            entity.setSenha(form.getSenha());
+            entity.setTelefone(form.getTelefone());
+            entity.setCpf(form.getCpf());
+            entity.setCidade(CidadeMapper.convertToEntity(form.getCidade()));
+            entity.setLogradouro(form.getLogradouro());
+            entity.setNumero(form.getNumero());
+            entity.setComplemento(form.getComplemento());
+            entity.setBairro(form.getBairro());
+            entity.setRegistroProfissional(form.getRegistroProfissional());
+            entity.setDiagnostico(form.getDiagnostico());
+            entity.setSexo(form.getSexo());
+            entity.setCep(form.getCep());
         }
         return entity;
     }
