@@ -14,10 +14,18 @@ public class AgendamentoDTO {
     private UsuarioDTO paciente;
     private ServicoDTO servico;
     private Integer status;
+
     private Date dataInclusao;
+    private String stDataInclusao;
+
     private Date dataAgendamento;
+    private String stDataAgendamento;
+
     private Date inicioAgendamento;
+    private String stInicioAgendamento;
+
     private Date fimAgendamento;
+    private String stFimAgendamento;
 
     public AgendamentoDTO() {
     }
@@ -112,5 +120,37 @@ public class AgendamentoDTO {
 
     public void setFimAgendamento(Date fimAgendamento) {
         this.fimAgendamento = fimAgendamento;
+    }
+
+    public String getStDataInclusao() {
+        return stDataInclusao;
+    }
+
+    public void setStDataInclusao(String stDataInclusao) {
+        this.stDataInclusao = stDataInclusao;
+    }
+
+    public String getStDataAgendamento() {
+        return stDataAgendamento;
+    }
+
+    public void setStDataAgendamento(String stDataAgendamento) {
+        this.stDataAgendamento = stDataAgendamento;
+    }
+
+    public String getStInicioAgendamento() {
+        return stInicioAgendamento;
+    }
+
+    public void setStInicioAgendamento(String stInicioAgendamento) {
+        this.stInicioAgendamento = stInicioAgendamento;
+    }
+
+    public String getStFimAgendamento() {
+        return stFimAgendamento;
+    }
+
+    public void setStFimAgendamento(String stFimAgendamento) {
+        this.stFimAgendamento = stFimAgendamento;
     }
 }
