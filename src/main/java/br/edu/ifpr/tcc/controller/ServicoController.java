@@ -4,7 +4,9 @@ import br.edu.ifpr.tcc.dto.RetornoDTO;
 import br.edu.ifpr.tcc.dto.ServicoDTO;
 import br.edu.ifpr.tcc.form.ServicoForm;
 import br.edu.ifpr.tcc.mapper.ServicoMapper;
+import br.edu.ifpr.tcc.modelo.Agendamento;
 import br.edu.ifpr.tcc.modelo.Servico;
+import br.edu.ifpr.tcc.repository.AgendamentoRepository;
 import br.edu.ifpr.tcc.repository.EstadoRepository;
 import br.edu.ifpr.tcc.repository.ServicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class ServicoController {
 
     @Autowired
     private ServicoRepository servicoRepository;
+
+    @Autowired
+    private AgendamentoRepository agendamentoRepository;
 
     @GetMapping("/listar")
     @Cacheable(value = "listarServicos")
@@ -139,6 +144,17 @@ public class ServicoController {
             Optional<Servico> servico = servicoRepository.findById(id);
 
             if (servico.isPresent()) {
+
+                Servico servicoAux = servico.get();
+
+                List<Agendamento> agendamentosServico = agendamentoRepository.consultarRelacaoServicoAgendamento(servicoAux);
+
+                if (agendamentosServico != null && agendamentosServico.size() > 0) {
+                    retorno = RetornoDTO.erro("Erro ao deletar! Serviço com vínculo em agendamentos!", null);
+
+                    return new ResponseEntity<>(retorno, HttpStatus.OK);
+                }
+
                 servicoRepository.deleteById(id);
                 retorno = RetornoDTO.sucesso("Dados alterados com sucesso!");
                 return new ResponseEntity<>(retorno, HttpStatus.OK);
