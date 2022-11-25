@@ -8,9 +8,11 @@ import br.edu.ifpr.tcc.form.CidadeForm;
 import br.edu.ifpr.tcc.form.UsuarioForm;
 import br.edu.ifpr.tcc.mapper.CidadeMapper;
 import br.edu.ifpr.tcc.mapper.UsuarioMapper;
+import br.edu.ifpr.tcc.modelo.Agendamento;
 import br.edu.ifpr.tcc.modelo.Cidade;
 import br.edu.ifpr.tcc.modelo.Estado;
 import br.edu.ifpr.tcc.modelo.Usuario;
+import br.edu.ifpr.tcc.repository.AgendamentoRepository;
 import br.edu.ifpr.tcc.repository.CidadeRepository;
 import br.edu.ifpr.tcc.repository.EstadoRepository;
 import br.edu.ifpr.tcc.repository.UsuarioRepository;
@@ -43,6 +45,9 @@ public class PacienteController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private AgendamentoRepository agendamentoRepository;
 
     @GetMapping("/listarPacientes")
     public ResponseEntity<RetornoDTO> listarPacientes() {
@@ -218,6 +223,17 @@ public class PacienteController {
             Optional<Usuario> usuario = usuarioRepository.findById(id);
 
             if (usuario.isPresent()) {
+
+                Usuario paciente = usuario.get();
+
+                List<Agendamento> agendamentosPaciente = agendamentoRepository.consultarRelacaoPacienteAgendamento(paciente);
+
+                if (agendamentosPaciente != null && agendamentosPaciente.size() > 0) {
+                    retorno = RetornoDTO.erro("Erro ao deletar! Paciente com vínculo em agendamentos!", null);
+
+                    return new ResponseEntity<>(retorno, HttpStatus.OK);
+                }
+
                 usuarioRepository.deleteById(id);
                 retorno = RetornoDTO.sucesso("Dados deletados com sucesso!");
                 return new ResponseEntity<>(retorno, HttpStatus.OK);
