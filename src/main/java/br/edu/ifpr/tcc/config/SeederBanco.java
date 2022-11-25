@@ -47,23 +47,35 @@ public class SeederBanco implements CommandLineRunner {
 
         List<Estado> estados = new ArrayList<>();
 
+        Optional<Estado> estado1 = estadoRepository.findByNome("Paraná");
+        Optional<Estado> estado2 = estadoRepository.findByNome("Mato Grosso");
+        Optional<Estado> estado3 = estadoRepository.findByNome("Santa Catarina");
 
-        Estado pr = new Estado("Paraná", "PR");
-        Estado mt = new Estado("Mato Grosso", "MT");
-        Estado sc = new Estado("Santa Catarina", "SC");
+        if (!estado1.isPresent()) {
+            Estado pr = new Estado("Paraná", "PR");
+            estados.add(pr);
+        }
 
-        estados.add(pr);
-        estados.add(mt);
-        estados.add(sc);
+        if (!estado2.isPresent()) {
+            Estado mt = new Estado("Mato Grosso", "MT");
+            estados.add(mt);
+        }
 
-        estadoRepository.saveAll(estados);
+        if (!estado3.isPresent()) {
+            Estado sc = new Estado("Santa Catarina", "SC");
+            estados.add(sc);
+        }
+
+        if (estados != null && estados.size() > 0) {
+            estadoRepository.saveAll(estados);
+        }
 
     }
 
     public void populaCidade() {
 
 
-        Optional<Cidade> cidade1 = cidadeRepository.obterCidadeByNomeEEstadoId("Paranavaí", 2L);
+        Optional<Cidade> cidade1 = cidadeRepository.obterCidadeByNomeEEstadoId("Paranavaí", 285L);
 
         if (!cidade1.isPresent()) {
             Cidade cidade = new Cidade();
