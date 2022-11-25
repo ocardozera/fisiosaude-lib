@@ -42,6 +42,25 @@ public class CidadeController {
         return new ResponseEntity<>(retorno, HttpStatus.OK);
     }
 
+    @PostMapping("/consultarCidadeByNomeUF")
+    public ResponseEntity<RetornoDTO> consultarCidadeByNomeUF(@RequestBody @Valid CidadeForm cidadeForm) {
+        RetornoDTO retorno;
+
+        Optional<Cidade> cidade = cidadeRepository.consultarCidadeByNomeUF(cidadeForm.getNome(), cidadeForm.getEstado().getSigla());
+
+        if (cidade.isPresent()) {
+            CidadeDTO cidadeDTO = CidadeMapper.convertToVo(cidade.get());
+
+            retorno = RetornoDTO.sucesso("Cidade encontrada com sucesso!", cidadeDTO);
+
+            return new ResponseEntity<>(retorno, HttpStatus.OK);
+        } else {
+            retorno = RetornoDTO.erro("Cidade não encontrada!");
+
+            return new ResponseEntity<>(retorno, HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PostMapping("/cadastrar")
     @Transactional
     @CacheEvict(value = "listarCidades", allEntries = true)
