@@ -19,6 +19,10 @@ public class Servico {
 	public Servico() {
 	}
 
+	public Servico(Long id) {
+		this.id = id;
+	}
+
 	public Servico(Long id, String nome, Double valorSessao, Integer maximoAlunosSessao) {
 		this.id = id;
 		this.nome = nome;
