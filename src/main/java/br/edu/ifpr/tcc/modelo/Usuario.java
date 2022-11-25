@@ -73,6 +73,13 @@ public class Usuario implements UserDetails {
 		return true;
 	}
 
+	public Usuario() {
+	}
+
+	public Usuario(Long id) {
+		this.id = id;
+	}
+
 	public Long getId() {
 		return id;
 	}
