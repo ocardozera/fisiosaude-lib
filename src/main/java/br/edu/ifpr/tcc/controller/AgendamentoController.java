@@ -25,10 +25,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/agendamento")
@@ -53,6 +50,400 @@ public class AgendamentoController {
         );
 
         retorno = RetornoDTO.sucesso("Consulta realizada com sucesso!", AgendamentoMapper.convertToListVo(lista));
+
+        return new ResponseEntity<>(retorno, HttpStatus.OK);
+    }
+
+    @PostMapping("/listarFiltros")
+    public ResponseEntity<RetornoDTO> listarFiltros(@RequestBody AgendamentoForm agendamento) {
+        RetornoDTO retorno;
+        List<Agendamento> listaAgendamentos = null;
+        Boolean utilizouFindAll = false;
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+        if (agendamento != null) {
+
+            if (agendamento.getPaciente() != null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() == null
+                    && agendamento.getStatus() == null
+                    && agendamento.getStDataAgendamento() == null) {
+
+                Usuario paciente = new Usuario(agendamento.getPaciente().getId());
+
+                listaAgendamentos = agendamentoRepository.filtroPorPaciente(paciente);
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() != null
+                    && agendamento.getServico() == null
+                    && agendamento.getStatus() == null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                Usuario fisioterapeuta = new Usuario(agendamento.getFisioterapeuta().getId());
+
+                listaAgendamentos = agendamentoRepository.filtroPorFisioterapeuta(fisioterapeuta);
+
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() != null
+                    && agendamento.getStatus() == null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                Servico servico = new Servico(agendamento.getServico().getId());
+
+                listaAgendamentos = agendamentoRepository.filtroPorServico(servico);
+
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() == null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                Integer status = agendamento.getStatus();
+
+                listaAgendamentos = agendamentoRepository.filtroPorStatus(status);
+
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() == null
+                    && agendamento.getStatus() == null
+                    && agendamento.getStDataAgendamento() != null)  {
+
+                try {
+                    Date dataAgendamento = formatter.parse(agendamento.getStDataAgendamento());
+
+                    listaAgendamentos = agendamentoRepository.filtroPorDataAgendamento(dataAgendamento);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (agendamento.getPaciente() != null
+                    && agendamento.getFisioterapeuta() != null
+                    && agendamento.getServico() == null
+                    && agendamento.getStatus() == null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                Usuario paciente = new Usuario(agendamento.getPaciente().getId());
+                Usuario fisioterapeuta = new Usuario(agendamento.getFisioterapeuta().getId());
+
+                listaAgendamentos = agendamentoRepository.filtroPorPacienteFisioterapeuta(paciente, fisioterapeuta);
+
+            } else if (agendamento.getPaciente() != null
+                    && agendamento.getFisioterapeuta() != null
+                    && agendamento.getServico() != null
+                    && agendamento.getStatus() == null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                Usuario paciente = new Usuario(agendamento.getPaciente().getId());
+                Usuario fisioterapeuta = new Usuario(agendamento.getFisioterapeuta().getId());
+                Servico servico = new Servico(agendamento.getServico().getId());
+
+                listaAgendamentos = agendamentoRepository.filtroPorPacienteFisioterapeutaServico(paciente, fisioterapeuta, servico);
+
+            } else if (agendamento.getPaciente() != null
+                    && agendamento.getFisioterapeuta() != null
+                    && agendamento.getServico() != null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                Usuario paciente = new Usuario(agendamento.getPaciente().getId());
+                Usuario fisioterapeuta = new Usuario(agendamento.getFisioterapeuta().getId());
+                Servico servico = new Servico(agendamento.getServico().getId());
+                Integer status = agendamento.getStatus();
+
+                listaAgendamentos = agendamentoRepository.filtroPorPacienteFisioterapeutaServicoStatus(paciente, fisioterapeuta, servico, status);
+
+            } else if (agendamento.getPaciente() != null
+                    && agendamento.getFisioterapeuta() != null
+                    && agendamento.getServico() != null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() != null)  {
+
+                try {
+
+                    Usuario paciente = new Usuario(agendamento.getPaciente().getId());
+                    Usuario fisioterapeuta = new Usuario(agendamento.getFisioterapeuta().getId());
+                    Servico servico = new Servico(agendamento.getServico().getId());
+                    Integer status = agendamento.getStatus();
+                    Date dataAgendamento = formatter.parse(agendamento.getStDataAgendamento());
+
+                    listaAgendamentos = agendamentoRepository.filtroPorPacienteFisioterapeutaServicoStatusDataAgendamento(paciente, fisioterapeuta, servico, status, dataAgendamento);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            } else if (agendamento.getPaciente() != null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() != null
+                    && agendamento.getStatus() == null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                Usuario paciente = new Usuario(agendamento.getPaciente().getId());
+                Servico servico = new Servico(agendamento.getServico().getId());
+
+                listaAgendamentos = agendamentoRepository.filtroPorPacienteServico(paciente, servico);
+
+            } else if (agendamento.getPaciente() != null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() != null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                Usuario paciente = new Usuario(agendamento.getPaciente().getId());
+                Servico servico = new Servico(agendamento.getServico().getId());
+                Integer status = agendamento.getStatus();
+
+                listaAgendamentos = agendamentoRepository.filtroPorPacienteServicoStatus(paciente, servico, status);
+
+            } else if (agendamento.getPaciente() != null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() != null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() != null)  {
+
+                try {
+
+                    Usuario paciente = new Usuario(agendamento.getPaciente().getId());
+                    Servico servico = new Servico(agendamento.getServico().getId());
+                    Integer status = agendamento.getStatus();
+                    Date dataAgendamento = formatter.parse(agendamento.getStDataAgendamento());
+
+                    listaAgendamentos = agendamentoRepository.filtroPorPacienteServicoStatusDataAgendamento(paciente, servico, status, dataAgendamento);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (agendamento.getPaciente() != null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() == null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                Usuario paciente = new Usuario(agendamento.getPaciente().getId());
+                Integer status = agendamento.getStatus();
+
+                listaAgendamentos = agendamentoRepository.filtroPorPacienteStatus(paciente, status);
+
+            } else if (agendamento.getPaciente() != null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() == null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() != null)  {
+
+                try {
+
+                    Usuario paciente = new Usuario(agendamento.getPaciente().getId());
+                    Integer status = agendamento.getStatus();
+                    Date dataAgendamento = formatter.parse(agendamento.getStDataAgendamento());
+
+                    listaAgendamentos = agendamentoRepository.filtroPorPacienteStatusDataAgendamento(paciente, status, dataAgendamento);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (agendamento.getPaciente() != null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() == null
+                    && agendamento.getStatus() == null
+                    && agendamento.getStDataAgendamento() != null)  {
+
+                try {
+
+                    Usuario paciente = new Usuario(agendamento.getPaciente().getId());
+                    Date dataAgendamento = formatter.parse(agendamento.getStDataAgendamento());
+
+                    listaAgendamentos = agendamentoRepository.filtroPorPacienteDataAgendamento(paciente, dataAgendamento);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() != null
+                    && agendamento.getServico() != null
+                    && agendamento.getStatus() == null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                Usuario fisioterapeuta = new Usuario(agendamento.getFisioterapeuta().getId());
+                Servico servico = new Servico(agendamento.getServico().getId());
+
+                listaAgendamentos = agendamentoRepository.filtroPorFisioterapeutaServico(fisioterapeuta, servico);
+
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() != null
+                    && agendamento.getServico() != null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                Usuario fisioterapeuta = new Usuario(agendamento.getFisioterapeuta().getId());
+                Servico servico = new Servico(agendamento.getServico().getId());
+                Integer status = agendamento.getStatus();
+
+                listaAgendamentos = agendamentoRepository.filtroPorFisioterapeutaServicoStatus(fisioterapeuta, servico, status);
+
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() != null
+                    && agendamento.getServico() != null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() != null)  {
+
+                try {
+
+                    Usuario fisioterapeuta = new Usuario(agendamento.getFisioterapeuta().getId());
+                    Servico servico = new Servico(agendamento.getServico().getId());
+                    Integer status = agendamento.getStatus();
+                    Date dataAgendamento = formatter.parse(agendamento.getStDataAgendamento());
+
+                    listaAgendamentos = agendamentoRepository.filtroPorFisioterapeutaServicoStatusDataAgendamento(fisioterapeuta, servico, status, dataAgendamento);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() != null
+                    && agendamento.getServico() == null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                try {
+
+                    Usuario fisioterapeuta = new Usuario(agendamento.getFisioterapeuta().getId());
+                    Integer status = agendamento.getStatus();
+
+                    listaAgendamentos = agendamentoRepository.filtroPorFisioterapeutaStatus(fisioterapeuta, status);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() != null
+                    && agendamento.getServico() == null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() != null)  {
+
+                try {
+
+                    Usuario fisioterapeuta = new Usuario(agendamento.getFisioterapeuta().getId());
+                    Integer status = agendamento.getStatus();
+                    Date dataAgendamento = formatter.parse(agendamento.getStDataAgendamento());
+
+                    listaAgendamentos = agendamentoRepository.filtroPorFisioterapeutaStatusDataAgendamento(fisioterapeuta, status, dataAgendamento);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() != null
+                    && agendamento.getServico() == null
+                    && agendamento.getStatus() == null
+                    && agendamento.getStDataAgendamento() != null)  {
+
+                try {
+
+                    Usuario fisioterapeuta = new Usuario(agendamento.getFisioterapeuta().getId());
+                    Date dataAgendamento = formatter.parse(agendamento.getStDataAgendamento());
+
+                    listaAgendamentos = agendamentoRepository.filtroPorFisioterapeutaDataAgendamento(fisioterapeuta, dataAgendamento);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() != null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() == null)  {
+
+                try {
+
+                    Servico servico = new Servico(agendamento.getServico().getId());
+                    Integer status = agendamento.getStatus();
+
+                    listaAgendamentos = agendamentoRepository.filtroPorServicoStatus(servico, status);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() != null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() != null)  {
+
+                try {
+
+                    Servico servico = new Servico(agendamento.getServico().getId());
+                    Integer status = agendamento.getStatus();
+                    Date dataAgendamento = formatter.parse(agendamento.getStDataAgendamento());
+
+                    listaAgendamentos = agendamentoRepository.filtroPorServicoStatusDataAgendamento(servico, status, dataAgendamento);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (agendamento.getPaciente() == null
+                    && agendamento.getFisioterapeuta() == null
+                    && agendamento.getServico() == null
+                    && agendamento.getStatus() != null
+                    && agendamento.getStDataAgendamento() != null)  {
+
+                try {
+
+                    Integer status = agendamento.getStatus();
+                    Date dataAgendamento = formatter.parse(agendamento.getStDataAgendamento());
+
+                    listaAgendamentos = agendamentoRepository.filtroPorStatusDataAgendamento(status, dataAgendamento);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                utilizouFindAll = true;
+                listaAgendamentos = agendamentoRepository.findAll(
+                        Sort.by(Sort.Direction.DESC, "dataAgendamento", "inicioAgendamento")
+                );
+            }
+
+        } else {
+            utilizouFindAll = true;
+            listaAgendamentos = agendamentoRepository.findAll(
+                    Sort.by(Sort.Direction.DESC, "dataAgendamento", "inicioAgendamento")
+            );
+        }
+
+        if (!utilizouFindAll) {
+
+            Collections.sort(listaAgendamentos, Comparator.comparing(Agendamento::getDataAgendamento));
+
+            listaAgendamentos.sort((o1, o2) -> {
+                if (o1.getDataAgendamento().getTime() > o2.getDataAgendamento().getTime() && o1.getInicioAgendamento().getTime() > o2.getInicioAgendamento().getTime()) {
+                    return -1;
+                } else if (o1.getDataAgendamento().getTime() == o2.getDataAgendamento().getTime() && o1.getInicioAgendamento().getTime() > o2.getInicioAgendamento().getTime()) {
+                    return -1;
+                } else if (o1.getDataAgendamento().getTime() == o2.getDataAgendamento().getTime() && o1.getInicioAgendamento().getTime() < o2.getInicioAgendamento().getTime()) {
+                    return 1;
+                } else {
+                    return 1;
+                }
+            });
+
+        }
+
+
+
+        retorno = RetornoDTO.sucesso("Consulta realizada com sucesso!", AgendamentoMapper.convertToListVo(listaAgendamentos));
 
         return new ResponseEntity<>(retorno, HttpStatus.OK);
     }
@@ -123,11 +514,19 @@ public class AgendamentoController {
 
                 // consultar pra ver se ja tem agendamento criado
 
+                Usuario pacienteAux = agendamento.getPaciente();
+                List<Agendamento> agendamentosJaCriadosPacientes = agendamentoRepository.consultarSeJaExisteAgendamentoPaciente(dataAgendamento, dataHoraInicioAgendamento, dataHoraFimAgendamento, pacienteAux);
+                if (agendamentosJaCriadosPacientes != null && agendamentosJaCriadosPacientes.size() > 0) {
+                    //Significa que ja existe agendamento, retornando msg de erro pro usuário
+
+                    retorno = RetornoDTO.erro("Já existem agendamentos cadastrados neste horário");
+                    return new ResponseEntity<>(retorno, HttpStatus.OK);
+                }
+
                 ServicoDTO servicoDTO = ServicoMapper.convertToVo(servico.get());
                 Usuario fisioterapeutaAux = fisioterapeuta.get();
 
                 List<Agendamento> agendamentosJaCriados = agendamentoRepository.consultarSeJaExisteAgendamento(dataAgendamento, dataHoraInicioAgendamento, dataHoraFimAgendamento, fisioterapeutaAux);
-
                 if (servicoDTO != null && servicoDTO.getMaximoAlunosSessao() != null) {
                     //Se for 1, é fisioterapia, deixando somente 1 paciente por sessão
                     if (agendamentosJaCriados != null && agendamentosJaCriados.size() > 0 && agendamentosJaCriados.size() >= servicoDTO.getMaximoAlunosSessao()) {
@@ -136,7 +535,6 @@ public class AgendamentoController {
                         retorno = RetornoDTO.erro("Já existem agendamentos cadastrados neste horário");
                         return new ResponseEntity<>(retorno, HttpStatus.OK);
                     }
-
                 }
 
 
@@ -271,6 +669,18 @@ public class AgendamentoController {
                     gcFim.set(GregorianCalendar.HOUR_OF_DAY, Integer.parseInt(horaFim[0]));
                     gcFim.set(GregorianCalendar.MINUTE, Integer.parseInt(horaFim[1]));
                     Date dataHoraFimAgendamento = gcFim.getTime();
+
+
+                    Usuario pacienteAux = agendamentoAtualizar.getPaciente();
+                    List<Agendamento> agendamentosJaCriadosPacientes = agendamentoRepository.consultarSeJaExisteAgendamentoPaciente(dataAgendamento, dataHoraInicioAgendamento, dataHoraFimAgendamento, pacienteAux);
+                    if (agendamentosJaCriadosPacientes != null && agendamentosJaCriadosPacientes.size() > 0) {
+                        //Significa que ja existe agendamento, retornando msg de erro pro usuário
+
+                        retorno = RetornoDTO.erro("Já existem agendamentos cadastrados neste horário");
+                        return new ResponseEntity<>(retorno, HttpStatus.OK);
+                    }
+
+
 
                     Usuario fisioterapeutaAux = fisioterapeuta.get();
                     Date dataAgendamentoAntigo = agendamentoAux.getDataAgendamento();

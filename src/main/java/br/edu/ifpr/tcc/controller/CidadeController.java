@@ -31,7 +31,6 @@ public class CidadeController {
     private CidadeRepository cidadeRepository;
 
     @GetMapping("/listar")
-    @Cacheable(value = "listarCidades")
     public ResponseEntity<RetornoDTO> lista() {
         RetornoDTO retorno;
 
@@ -63,7 +62,6 @@ public class CidadeController {
 
     @PostMapping("/cadastrar")
     @Transactional
-    @CacheEvict(value = "listarCidades", allEntries = true)
     public ResponseEntity<?> cadastrar(@RequestBody @Valid CidadeForm cidadeForm) {
         RetornoDTO retorno;
 
@@ -123,7 +121,6 @@ public class CidadeController {
 
     @PutMapping("/editar/{id}")
     @Transactional
-    @CacheEvict(value = "listarCidades", allEntries = true)
     public ResponseEntity<RetornoDTO> atualizar(@PathVariable Long id, @RequestBody @Valid CidadeForm cidadeForm) {
         RetornoDTO retorno;
 
@@ -153,7 +150,6 @@ public class CidadeController {
 
     @DeleteMapping("/deletar/{id}")
     @Transactional
-    @CacheEvict(value = "listarCidades", allEntries = true)
     public ResponseEntity<RetornoDTO> remover(@PathVariable Long id) {
         RetornoDTO retorno;
 
